@@ -541,27 +541,21 @@
             </button>
           </div>
 
-          <!-- 22:05 Night Calm 즉시 & 예약 알림 (사용자 요청 반영) -->
-          <div class="p-3 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border border-indigo-200/80 space-y-2">
+          <!-- 테스트 알림: 5초 후 수신 (사용자 요청 반영) -->
+          <div class="p-3 bg-gradient-to-br from-sky-50 to-indigo-50 rounded-2xl border border-sky-200/80 space-y-2">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-extrabold text-indigo-950 flex items-center gap-1">
-                <i data-lucide="moon" class="w-3.5 h-3.5 text-indigo-600"></i> 22:05 Night Calm 루틴
+              <span class="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
+                <i data-lucide="bell-ring" class="w-4 h-4 text-sky-600"></i> 테스트 푸시 알림
               </span>
-              <span class="text-[10px] font-bold text-indigo-600 bg-white px-2 py-0.5 rounded-md border border-indigo-200">테스트 맞춤</span>
+              <span class="text-[10px] font-bold text-sky-600 bg-white px-2 py-0.5 rounded-md border border-sky-200">5초 후 수신</span>
             </div>
-            <p class="text-[11px] text-indigo-700 leading-tight">
-              실제 스마트폰 상단 배너와 윈도우 알림창으로 즉시 발송됩니다.
+            <p class="text-[11px] text-slate-600 leading-tight">
+              버튼을 누르고 화면을 끄거나 다른 앱으로 나가보세요. 5초 뒤 진짜 백그라운드 푸시 알림이 도착합니다!
             </p>
-            <div class="grid grid-cols-2 gap-1.5 pt-1">
-              <button onclick="trigger2205PushNow()" class="py-2 px-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center gap-1 active:scale-95">
-                <i data-lucide="send" class="w-3 h-3"></i>
-                <span>22:05 즉시 발송</span>
-              </button>
-              <button onclick="schedule2205Push(5)" id="btnCountdownPush" class="py-2 px-2.5 bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 active:scale-95">
-                <i data-lucide="timer" class="w-3 h-3"></i>
-                <span>5초 뒤 수신 예약</span>
-              </button>
-            </div>
+            <button onclick="scheduleTestPush(5)" id="btnCountdownPush" class="w-full py-2.5 px-3 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center gap-1.5 active:scale-95">
+              <i data-lucide="timer" class="w-3.5 h-3.5"></i>
+              <span>⏱️ 5초 후 테스트 알림 받기</span>
+            </button>
           </div>
 
           <!-- 기존 서카디언 정시 알림 리스트 -->
@@ -1266,34 +1260,33 @@
       }
     }
 
-    // 22:05 Night Calm 즉시 발송 핸들러 (사용자 요청)
-    function trigger2205PushNow() {
+    // 테스트 알림 즉시 발송 핸들러
+    function triggerTestPushNow() {
       sendRealPushNotification(
-        "🌙 [Night Calm] 22:05 야간 수분 릴랙스 루틴",
-        "숙면 중 갈증을 예방하는 Night Calm 한 잔으로 편안한 밤을 맞이하세요. (오늘 목표 달성률을 체크해보세요!)"
+        "💧 [Circadian] 테스트 수분 루틴 알림",
+        "서카디언 수분 루틴 알림이 정상적으로 수신되었습니다! 하루 1분 수분 체크를 시작해보세요."
       );
-      changeCircadianSlot('NIGHT');
       confetti({ particleCount: 30, spread: 50 });
     }
 
-    // 22:05 알림 5초 카운트다운 예약 발송 핸들러 (사용자 요청)
-    function schedule2205Push(seconds = 5) {
+    // 테스트 알림 5초 카운트다운 예약 발송 핸들러 (사용자 요청 반영)
+    function scheduleTestPush(seconds = 5) {
       const btn = document.getElementById('btnCountdownPush');
       if (countdownTimer) clearInterval(countdownTimer);
 
       let remain = seconds;
-      btn.innerText = `⏱️ ${remain}초 뒤 도착...`;
+      btn.innerHTML = `<span>⏱️ ${remain}초 뒤 푸시 발송... (화면을 닫아보세요)</span>`;
       btn.disabled = true;
 
       countdownTimer = setInterval(() => {
         remain -= 1;
         if (remain > 0) {
-          btn.innerText = `⏱️ ${remain}초 뒤 도착...`;
+          btn.innerHTML = `<span>⏱️ ${remain}초 뒤 푸시 발송... (화면을 닫아보세요)</span>`;
         } else {
           clearInterval(countdownTimer);
-          btn.innerText = "5초 뒤 수신 예약";
+          btn.innerHTML = `<span>⏱️ 5초 후 테스트 알림 받기</span>`;
           btn.disabled = false;
-          trigger2205PushNow();
+          triggerTestPushNow();
         }
       }, 1000);
     }
@@ -1326,23 +1319,6 @@
     function recordProductClick(action) {
       alert(`[D2C 트래킹] ${action} 액션이 기록되었습니다. 제품 상세/주문 페이지로 이동합니다.`);
     }
-
-    // 실제 시계 1초마다 감지하여 22:05 정각일 때 자동 푸시 알림 발송
-    let hasSent2205Auto = false;
-    setInterval(() => {
-      const now = new Date();
-      const hours = now.getHours();
-      const minutes = now.getMinutes();
-      const seconds = now.getSeconds();
-
-      if (hours === 22 && minutes === 5 && seconds === 0 && !hasSent2205Auto) {
-        hasSent2205Auto = true;
-        sendRealPushNotification(
-          "🌙 [Night Calm] 22:05 정시 루틴 도착!",
-          "지금은 22시 05분입니다. 부담 없는 나이트 워터 한 잔으로 오늘 수분 루틴을 완성하세요."
-        );
-      }
-    }, 1000);
 
     // ==========================================
     // 소셜 로그인 & 신체 프로필 제어 함수
