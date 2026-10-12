@@ -58,6 +58,23 @@
   <!-- 모바일 뷰포트 컨테이너 (디바이스 프레임) -->
   <div class="w-full max-w-md bg-white min-h-screen md:min-h-[880px] md:rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden relative border border-slate-200/80">
 
+    <!-- 스마트폰 상단 플로팅 인앱 푸시 알림 배너 (iOS/Android 네이티브 스타일) -->
+    <div id="inAppPushToast" class="absolute top-3 left-3 right-3 z-50 bg-slate-900/95 backdrop-blur-md text-white rounded-2xl p-3.5 shadow-2xl border border-white/10 transform -translate-y-36 opacity-0 transition-all duration-500 ease-out flex items-start gap-3 pointer-events-auto">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center flex-shrink-0 text-white shadow-md shadow-sky-500/30">
+        <i data-lucide="bell-ring" class="w-4 h-4 text-white"></i>
+      </div>
+      <div class="flex-1 pr-1">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-bold text-sky-400 tracking-wide">CIRCADIAN HYDRATION • 지금</span>
+          <button onclick="dismissPushToast()" class="text-slate-400 hover:text-white p-0.5">
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+        <h4 id="pushToastTitle" class="text-xs font-black text-white mt-0.5 leading-snug">푸시 알림 제목</h4>
+        <p id="pushToastBody" class="text-[11px] text-slate-300 mt-0.5 leading-tight">푸시 알림 내용</p>
+      </div>
+    </div>
+
     <!-- 상단 상태바 & 헤더 -->
     <header class="pt-6 pb-4 px-5 bg-white border-b border-slate-100 flex items-center justify-between sticky top-0 z-20">
       <div class="flex items-center space-x-2">
@@ -490,22 +507,52 @@
         </div>
 
         <!-- Push 알림 발송 시뮬레이션 -->
-        <div class="space-y-2 pt-2 border-t border-slate-100">
-          <h4 class="text-xs font-bold text-slate-700">🔔 정시 Push 알림 발송 시뮬레이션</h4>
-          <div class="space-y-2">
-            <button onclick="simulatePush('08:00')" class="w-full py-2 px-3 text-left text-xs bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 flex justify-between items-center">
+        <div class="space-y-2.5 pt-2 border-t border-slate-100">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-slate-700">🔔 정시 Push 알림 테스트</h4>
+            <button onclick="requestNotificationPermission()" id="pushPermBadge" class="text-[10px] font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
+              브라우저 알림 켜기
+            </button>
+          </div>
+
+          <!-- 22:05 Night Calm 즉시 & 예약 알림 (사용자 요청 반영) -->
+          <div class="p-3 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border border-indigo-200/80 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold text-indigo-950 flex items-center gap-1">
+                <i data-lucide="moon" class="w-3.5 h-3.5 text-indigo-600"></i> 22:05 Night Calm 루틴
+              </span>
+              <span class="text-[10px] font-bold text-indigo-600 bg-white px-2 py-0.5 rounded-md border border-indigo-200">테스트 맞춤</span>
+            </div>
+            <p class="text-[11px] text-indigo-700 leading-tight">
+              실제 스마트폰 상단 배너와 윈도우 알림창으로 즉시 발송됩니다.
+            </p>
+            <div class="grid grid-cols-2 gap-1.5 pt-1">
+              <button onclick="trigger2205PushNow()" class="py-2 px-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center gap-1 active:scale-95">
+                <i data-lucide="send" class="w-3 h-3"></i>
+                <span>22:05 즉시 발송</span>
+              </button>
+              <button onclick="schedule2205Push(5)" id="btnCountdownPush" class="py-2 px-2.5 bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 active:scale-95">
+                <i data-lucide="timer" class="w-3 h-3"></i>
+                <span>5초 뒤 수신 예약</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 기존 서카디언 정시 알림 리스트 -->
+          <div class="space-y-1.5">
+            <button onclick="simulatePush('08:00')" class="w-full py-2 px-3 text-left text-xs bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 flex justify-between items-center transition">
               <span>08:00 Morning Reset 알림</span>
               <i data-lucide="bell" class="w-3.5 h-3.5 text-slate-400"></i>
             </button>
-            <button onclick="simulatePush('13:00')" class="w-full py-2 px-3 text-left text-xs bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 flex justify-between items-center">
+            <button onclick="simulatePush('13:00')" class="w-full py-2 px-3 text-left text-xs bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 flex justify-between items-center transition">
               <span>13:00 Day Focus 알림</span>
               <i data-lucide="bell" class="w-3.5 h-3.5 text-slate-400"></i>
             </button>
-            <button onclick="simulatePush('18:00')" class="w-full py-2 px-3 text-left text-xs bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 flex justify-between items-center">
+            <button onclick="simulatePush('18:00')" class="w-full py-2 px-3 text-left text-xs bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 flex justify-between items-center transition">
               <span>18:00 Evening Relief 알림</span>
               <i data-lucide="bell" class="w-3.5 h-3.5 text-slate-400"></i>
             </button>
-            <button onclick="simulatePush('22:00')" class="w-full py-2 px-3 text-left text-xs bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 flex justify-between items-center">
+            <button onclick="simulatePush('22:00')" class="w-full py-2 px-3 text-left text-xs bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 flex justify-between items-center transition">
               <span>22:00 Night Calm 알림</span>
               <i data-lucide="bell" class="w-3.5 h-3.5 text-slate-400"></i>
             </button>
@@ -1072,20 +1119,158 @@
       alert('Apple Health 걸음수 14,000보 및 운동 60분 데이터가 반영되어 권장 수분량이 4.0L로 조정되었습니다!');
     }
 
-    // 푸시 알림 시뮬레이션
+    // ==========================================
+    // 실제 Web Notification API & 인앱 푸시 토스트 엔진
+    // ==========================================
+    let countdownTimer = null;
+    let pushToastTimeout = null;
+
+    // 브라우저 알림 권한 요청
+    function requestNotificationPermission() {
+      if (!("Notification" in window)) {
+        alert("이 브라우저는 웹 푸시 알림(Web Notification)을 지원하지 않습니다.");
+        return;
+      }
+      Notification.requestPermission().then(permission => {
+        const badge = document.getElementById('pushPermBadge');
+        if (permission === "granted") {
+          badge.innerText = "알림 허용됨 ✓";
+          badge.className = "text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200";
+          sendRealPushNotification(
+            "[Circadian] 알림 허용 완료 🔔",
+            "이제 서카디언 정시(08:00, 13:00, 18:00, 22:00, 22:05)마다 알림을 받아보실 수 있습니다."
+          );
+        } else {
+          badge.innerText = "알림 차단됨 ✕";
+          badge.className = "text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200";
+          alert("브라우저 알림 권한이 차단되었습니다. 상단 인앱 배너로 알림이 대체 표시됩니다.");
+        }
+      });
+    }
+
+    // 실제 브라우저 푸시 + 상단 인앱 토스트 동시 발송
+    function sendRealPushNotification(title, body) {
+      // 1. 실제 브라우저 시스템 알림창 (OS 레벨)
+      if ("Notification" in window && Notification.permission === "granted") {
+        try {
+          const notif = new Notification(title, {
+            body: body,
+            icon: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png",
+            tag: "circadian-push-" + Date.now()
+          });
+          notif.onclick = () => { window.focus(); notif.close(); };
+        } catch (err) {
+          console.warn("Desktop notification trigger fallback:", err);
+        }
+      }
+
+      // 모바일 진동 효과 (지원 기기)
+      if (navigator.vibrate) {
+        navigator.vibrate([100, 50, 100]);
+      }
+
+      // 2. 화면 상단 네이티브 스타일 플로팅 인앱 푸시 토스트 노출
+      showInAppPushToast(title, body);
+    }
+
+    // 상단 인앱 푸시 토스트 표시
+    function showInAppPushToast(title, body) {
+      const toast = document.getElementById('inAppPushToast');
+      document.getElementById('pushToastTitle').innerText = title;
+      document.getElementById('pushToastBody').innerText = body;
+
+      toast.classList.remove('-translate-y-36', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      if (pushToastTimeout) clearTimeout(pushToastTimeout);
+      pushToastTimeout = setTimeout(() => {
+        dismissPushToast();
+      }, 6000);
+    }
+
+    function dismissPushToast() {
+      const toast = document.getElementById('inAppPushToast');
+      toast.classList.add('-translate-y-36', 'opacity-0');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+    }
+
+    // 22:05 Night Calm 즉시 발송 핸들러 (사용자 요청)
+    function trigger2205PushNow() {
+      sendRealPushNotification(
+        "🌙 [Night Calm] 22:05 야간 수분 릴랙스 루틴",
+        "숙면 중 갈증을 예방하는 Night Calm 한 잔으로 편안한 밤을 맞이하세요. (오늘 목표 달성률을 체크해보세요!)"
+      );
+      changeCircadianSlot('NIGHT');
+      confetti({ particleCount: 30, spread: 50 });
+    }
+
+    // 22:05 알림 5초 카운트다운 예약 발송 핸들러 (사용자 요청)
+    function schedule2205Push(seconds = 5) {
+      const btn = document.getElementById('btnCountdownPush');
+      if (countdownTimer) clearInterval(countdownTimer);
+
+      let remain = seconds;
+      btn.innerText = `⏱️ ${remain}초 뒤 도착...`;
+      btn.disabled = true;
+
+      countdownTimer = setInterval(() => {
+        remain -= 1;
+        if (remain > 0) {
+          btn.innerText = `⏱️ ${remain}초 뒤 도착...`;
+        } else {
+          clearInterval(countdownTimer);
+          btn.innerText = "5초 뒤 수신 예약";
+          btn.disabled = false;
+          trigger2205PushNow();
+        }
+      }, 1000);
+    }
+
+    // 기존 정시 시뮬레이션 버튼들
     function simulatePush(time) {
       const msgs = {
-        '08:00': '[Morning Reset] 기상 후 1분 체크 알림! 밤새 빠져나간 수분을 Morning Reset과 함께 채워보세요.',
-        '13:00': '[Day Focus] 오후 활력 충전 시간! 나른한 오후 시원한 물과 함께 집중력을 높이세요.',
-        '18:00': '[Evening Relief] 하루 일과 마무리! 가벼운 스트레칭과 Evening Relief 루틴을 시작하세요.',
-        '22:00': '[Night Calm] 편안한 밤을 위한 수분 루틴! 숙면 중 갈증을 예방하는 릴랙스 워터 한 잔.'
+        '08:00': {
+          title: '☀️ [Morning Reset] 기상 후 1분 체크 알림',
+          body: '밤새 손실된 수분을 깨워주세요! 오늘 아침 Hydration Score를 확인하고 Morning Reset을 시작해보세요.'
+        },
+        '13:00': {
+          title: '💧 [Day Focus] 오후 활력 충전 시간',
+          body: '나른한 오후 1시! 시원한 물 500ml와 Day Focus로 피로 없는 집중력을 유지하세요.'
+        },
+        '18:00': {
+          title: '🌇 [Evening Relief] 일과를 비우는 시간',
+          body: '퇴근 후 가벼운 스트레칭과 함께 Evening Relief로 체내 밸런스를 맞춰보세요.'
+        },
+        '22:00': {
+          title: '🌙 [Night Calm] 편안한 밤을 위한 수분 루틴',
+          body: '숙면 중 목마름을 예방하는 릴랙스 워터 한 잔으로 하루를 마무리하세요.'
+        }
       };
-      alert(`[FCM Push 전송 (${time})]\n${msgs[time]}`);
+
+      const target = msgs[time] || { title: '[Circadian] 수분 루틴', body: '물 마실 시간입니다.' };
+      sendRealPushNotification(target.title, target.body);
     }
 
     function recordProductClick(action) {
       alert(`[D2C 트래킹] ${action} 액션이 기록되었습니다. 제품 상세/주문 페이지로 이동합니다.`);
     }
+
+    // 실제 시계 1초마다 감지하여 22:05 정각일 때 자동 푸시 알림 발송
+    let hasSent2205Auto = false;
+    setInterval(() => {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
+
+      if (hours === 22 && minutes === 5 && seconds === 0 && !hasSent2205Auto) {
+        hasSent2205Auto = true;
+        sendRealPushNotification(
+          "🌙 [Night Calm] 22:05 정시 루틴 도착!",
+          "지금은 22시 05분입니다. 부담 없는 나이트 워터 한 잔으로 오늘 수분 루틴을 완성하세요."
+        );
+      }
+    }, 1000);
 
     // ==========================================
     // 소셜 로그인 & 신체 프로필 제어 함수
