@@ -156,7 +156,7 @@
           <div class="space-y-3 pl-2 border-l border-slate-100">
             <div>
               <p class="text-xs text-slate-400 font-medium">오늘 권장 수분</p>
-              <p class="text-xl font-black text-slate-900 tracking-tight" id="recommendedText">2.4<span class="text-sm font-semibold text-slate-500 ml-0.5">L</span></p>
+              <p class="text-xl font-black text-slate-900 tracking-tight" id="recommendedText">2.0<span class="text-sm font-semibold text-slate-500 ml-0.5">L</span></p>
             </div>
             <div>
               <p class="text-xs text-slate-400 font-medium">현재 누적 섭취량</p>
@@ -536,7 +536,7 @@
     const state = {
       score: 82,
       grade: '좋음',
-      recommendedMl: 2400,
+      recommendedMl: 2000,
       currentIntakeMl: 0,
       intakeCount: 0,
       currentSlot: 'MORNING', // MORNING, DAY, EVENING, NIGHT
@@ -714,9 +714,9 @@
       else if (state.score >= 50) state.grade = '주의';
       else state.grade = '위험';
 
-      // 권장 수분량 재계산 (체중 65kg 기준)
-      let baseMl = 65 * 33 + 200;
-      if (hasWorkout) baseMl += 450;
+      // 기본 하루 권장 수분량 2.0L (2000ml) 기준
+      let baseMl = 2000;
+      if (hasWorkout) baseMl += 400;
       if (hasCoffee) baseMl += 150;
       state.recommendedMl = Math.round(baseMl / 50) * 50;
 
